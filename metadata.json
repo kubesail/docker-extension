@@ -1,0 +1,26 @@
+{
+  "icon": "icon.svg",
+  "ui": {
+    "dashboard-tab": {
+      "title": "KubeSail",
+      "root": "/ui",
+      "src": "index.html"
+    }
+  },
+  "host": {
+    "binaries": [
+      {
+        "darwin": [
+          {
+            "path": "/darwin/kubectl"
+          }
+        ],
+        "windows": [
+          {
+            "path": "/windows/kubectl.exe"
+          }
+        ]
+      }
+    ]
+  }
+}
