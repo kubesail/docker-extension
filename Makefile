@@ -10,10 +10,10 @@ build: ## Build service image to be deployed as a desktop extension
 	docker build --tag=$(IMAGE):$(TAG) .
 
 install: build-extension ## Install the extension
-	docker extension install $(IMAGE):$(TAG)
+	docker extension install --force $(IMAGE):$(TAG)
 
 update: build-extension ## Update the extension
-	docker extension update $(IMAGE):$(TAG)
+	docker extension update --force $(IMAGE):$(TAG)
 
 prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
 	docker buildx inspect $(BUILDER) || docker buildx create --name=$(BUILDER) --driver=docker-container --driver-opt=network=host
