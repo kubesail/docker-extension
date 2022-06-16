@@ -23,33 +23,45 @@ import {
 
 const ERR_KUBECTL_RUNNING = 'Gathering Kubernetes Resources. Please wait...';
 const ERR_NOT_ENABLED =
-  'Kubernetes WORDS is not enabled. To enable it, click the Settings Gear ⚙️ (top right) 🡆 Kubernetes 🡆 Enable Kubernetes.';
+  'Kubernetes is not enabled. To enable it, click the Settings Gear ⚙️ (top right) ➡ Kubernetes ➡ Enable Kubernetes.';
 
+let cliOut = null;
+const OUTPUT_WAITING = 'Still waiting on kubectl...';
 export function App() {
   const ddClient = createDockerDesktopClient();
   const [docs, setDocs] = useState([]);
   const [toast, setToast] = useState(null);
   const [error, setError] = useState(ERR_KUBECTL_RUNNING);
+  const [output, setOutput] = useState(null);
+  const [showRaw, setShowRaw] = useState(false);
   const [namespace, setNamespace] = useState('default');
   const [namespaces, setNamespaces] = useState(['default']);
 
   useEffect(kubectlGetResources, []);
   async function kubectlGetResources(inputText) {
-    let output = null;
-    setTimeout(() => {
-      if (output === null) setError(ERR_NOT_ENABLED);
+    setTimeout(function () {
+      if (cliOut === null) setError(ERR_NOT_ENABLED);
     }, 2500);
     try {
-      output = await ddClient.extension.host.cli.exec('kubectl', [
-        'get',
-        'deploy,ing,svc',
-        '-A',
-        '-o',
-        'json',
-        '--field-selector=metadata.namespace!=kube-system',
-      ]);
+      setOutput(OUTPUT_WAITING);
+      cliOut = await ddClient.extension.host.cli.exec(
+        'kubectl',
+        [
+          '--request-timeout 2',
+          '--context docker-desktop',
+          'get deploy,ing,svc -A',
+          '-o json',
+          '--field-selector=metadata.namespace!=kube-system',
+        ]
+          .join(' ')
+          .split(' '),
+      );
+      console.log('CLI Output:', cliOut);
+      setOutput(cliOut);
       setError(null);
     } catch (err) {
+      setOutput(err);
+      console.log('CLI Error:', err);
       if (err.code) setError(ERR_NOT_ENABLED);
       return;
     }
@@ -164,6 +176,16 @@ export function App() {
         <Typography variant="h6" textAlign="center">
           {error}
         </Typography>
+        {error === ERR_NOT_ENABLED && (
+          <Button
+            sx={{ position: 'absolute', bottom: 10, right: 10 }}
+            variant="outlined"
+            onClick={() => setShowRaw(!showRaw)}
+          >
+            Toggle Kubectl Output
+          </Button>
+        )}
+        {showRaw && <Typography>{JSON.stringify(output)}</Typography>}
       </Stack>
     );
   }
