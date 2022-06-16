@@ -23,7 +23,7 @@ import {
 
 const ERR_KUBECTL_RUNNING = 'Gathering Kubernetes Resources. Please wait...';
 const ERR_NOT_ENABLED =
-  'Kubernetes is not enabled. To enable it, click the Settings Gear ⚙️ (top right) 🡆 Kubernetes 🡆 Enable Kubernetes.';
+  'Kubernetes WORDS is not enabled. To enable it, click the Settings Gear ⚙️ (top right) 🡆 Kubernetes 🡆 Enable Kubernetes.';
 
 export function App() {
   const ddClient = createDockerDesktopClient();
@@ -61,7 +61,9 @@ export function App() {
     ];
     setNamespaces(nsSet);
 
-    if (!nsSet.includes('kubesail-agent')) {
+    if (nsSet.includes('kubesail-agent')) {
+      await waitForAgentReady();
+    } else {
       await installKubeSailAgent();
     }
   }
@@ -100,46 +102,41 @@ export function App() {
   }
 
   function followAgentLogs() {
-    const followCmd = ddClient.extension.host.cli.exec(
+    ddClient.extension.host.cli.exec(
       'kubectl',
       ['logs', '-n', 'kubesail-agent', '-f', '-l', 'app=kubesail-agent'],
       {
         stream: {
           onOutput(data) {
-            // As we can receive both `stdout` and `stderr`, we wrap them in a JSON object
-            console.log({
-              stdout: data.stdout,
-              stderr: data.stderr,
-            });
-
-            const line = data.stdout;
-
-            if (line.includes('https://kubesail.com/qr')) {
-              const url =
-                line.trim().split(' ').pop() + '?initialID=Docker+Desktop';
-              ddClient.host.openExternal(url);
-              setToast(
-                <>
-                  Finish adding your system at <a href={url}>{url}</a>.
-                </>,
-              );
-            }
-
-            const claimed = 'Server claimed! ';
-            if (line.includes(claimed)) {
-              try {
-                const agent = JSON.parse(line.trim().split(claimed).pop());
-                agent.username;
+            const lines = (data.stdout || '').split('\n');
+            for (const line of lines) {
+              if (line.includes('https://kubesail.com/qr')) {
+                const url =
+                  line.trim().split(' ').pop() + '?initialID=Docker+Desktop';
+                ddClient.host.openExternal(url);
                 setToast(
-                  `KubeSail agent is installed and ready! Welcome ${agent.username}!`,
+                  <>
+                    Finish adding your system at <a href={url}>{url}</a>.
+                  </>,
                 );
-              } catch {
-                setToast('Error parsing KubeSail agent output');
               }
-            }
 
-            if (line.includes('Installing KubeSail Template')) {
-              setTimeout(kubectlGetResources, 1000);
+              const claimed = 'Server claimed! ';
+              if (line.includes(claimed)) {
+                try {
+                  const agent = JSON.parse(line.trim().split(claimed).pop());
+                  agent.username;
+                  setToast(
+                    `KubeSail agent is installed and ready! Welcome ${agent.username}!`,
+                  );
+                } catch {
+                  setToast('Error parsing KubeSail agent output');
+                }
+              }
+
+              if (line.includes('Installing KubeSail Template')) {
+                setTimeout(kubectlGetResources, 1000);
+              }
             }
           },
           onError(error) {
