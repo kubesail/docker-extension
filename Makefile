@@ -6,6 +6,9 @@ BUILDER=buildx-multi-arch
 INFO_COLOR = \033[0;36m
 NO_COLOR   = \033[m
 
+dev:
+	docker extension dev ui-source $(IMAGE):$(TAG) http://localhost:9090
+
 build: ## Build service image to be deployed as a desktop extension
 	docker build --tag=$(IMAGE):$(TAG) .
 
@@ -20,9 +23,6 @@ prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
 
 push: prepare-buildx ## Build & Upload extension image to hub. Do not push if tag already exists: make push-extension tag=0.1
 	docker pull $(IMAGE):$(TAG) && echo "Failure: Tag already exists" || docker buildx build --push --builder=$(BUILDER) --platform=linux/amd64,linux/arm64 --build-arg TAG=$(TAG) --tag=$(IMAGE):$(TAG) .
-
-dev:
-  docker extension dev ui-source $(IMAGE):$(TAG) http://localhost:9090
 
 help: ## Show this help
 	@echo Please specify a build target. The choices are:
