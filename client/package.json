@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=9090 && react-scripts start",
     "build": "react-scripts build"
   },
   "dependencies": {

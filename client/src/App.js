@@ -251,7 +251,6 @@ export function App() {
           </TableBody>
         </Table>
       </TableContainer>
-
       <Stack direction="row" spacing={2} padding="20px">
         <Button variant="contained" onClick={kubectlGetResources}>
           Refresh
