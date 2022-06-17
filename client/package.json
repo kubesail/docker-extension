@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "start": "PORT=9090 react-scripts start",
+    "start": "cross-env PORT=9090 react-scripts start",
     "build": "react-scripts build"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "@mui/material": "^5.4.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "cross-env": "^7.0.3",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

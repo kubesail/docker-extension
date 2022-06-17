@@ -1,5 +1,5 @@
 IMAGE?=kubesail/docker-extension
-TAG?=latest
+TAG?=0.1.0
 
 BUILDER=buildx-multi-arch
 
@@ -23,6 +23,9 @@ push: prepare-buildx ## Build & Upload extension image to hub. Do not push if ta
 
 dev:
 	docker extension dev ui-source $(IMAGE):$(TAG) http://localhost:9090
+
+debug:
+	docker extension dev debug $(IMAGE):$(TAG)
 
 help: ## Show this help
 	@echo Please specify a build target. The choices are:

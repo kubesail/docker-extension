@@ -65,7 +65,7 @@ export function App() {
       if (err.code) setError(ERR_NOT_ENABLED);
       return;
     }
-    const parsedDocs = JSON.parse(output.stdout);
+    const parsedDocs = JSON.parse(cliOut.stdout);
     window.docs = parsedDocs.items;
     setDocs(sortDocs(parsedDocs.items));
     const nsSet = [
@@ -73,9 +73,7 @@ export function App() {
     ];
     setNamespaces(nsSet);
 
-    if (nsSet.includes('kubesail-agent')) {
-      await waitForAgentReady();
-    } else {
+    if (!nsSet.includes('kubesail-agent')) {
       await installKubeSailAgent();
     }
   }
@@ -185,7 +183,7 @@ export function App() {
             Toggle Kubectl Output
           </Button>
         )}
-        {showRaw && <Typography>{JSON.stringify(output)}</Typography>}
+        {showRaw && <Typography>{JSON.stringify(cliOut)}</Typography>}
       </Stack>
     );
   }
@@ -204,7 +202,7 @@ export function App() {
       height="calc(100vh - 60px)"
     >
       {toast && <Typography variant="h6">{toast}</Typography>}
-      <FormControl fullWidth margin="20px">
+      <FormControl fullWidth sx={{ margin: 3 }}>
         <InputLabel id="namespace-label">Namespace</InputLabel>
         <Select
           labelId="namespace-label"
@@ -214,7 +212,9 @@ export function App() {
           onChange={(e) => setNamespace(e.target.value)}
         >
           {namespaces.map((ns) => (
-            <MenuItem value={ns}>{ns}</MenuItem>
+            <MenuItem key={ns} value={ns}>
+              {ns}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>

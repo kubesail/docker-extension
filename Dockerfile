@@ -34,14 +34,13 @@ LABEL org.opencontainers.image.title="KubeSail" \
     org.opencontainers.image.description="Helps you install and manage apps running inside Kubernetes on Docker." \
     org.opencontainers.image.vendor="Kubesail Inc." \
     com.docker.desktop.extension.api.version=">= 0.0.1" \
-    com.docker.desktop.extension.icon="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" \
-    com.docker.extension.screenshots='[{"alt":"Hello, Moby", "url":"https://docker-extension-screenshots.s3.amazonaws.com/minimal-backend/1-hello-moby.png"}]' \
-    com.docker.extension.detailed-description="<h1>Description</h1><p>This is a sample extension that displays the text introduced in a textbox.</p>" \
-    com.docker.extension.publisher-url="https://www.docker.com" \
-    com.docker.extension.additional-urls='[{"title":"SDK Documentation","url":"https://docs.docker.com/desktop/extensions-sdk"}]' \
+    com.docker.desktop.extension.icon="https://kubesail.com/og-logo-1200.png" \
+    com.docker.extension.screenshots='[{"alt":"KubeSail", "url":"https://i.imgur.com/uxYABlK.png"}]' \
+    com.docker.extension.detailed-description="<h1>KubeSail</h1><p>The KubeSail Docker extension allows you to install self-hosted apps on Docker Desktop.</p>" \
+    com.docker.extension.publisher-url="https://kubesail.com" \
+    com.docker.extension.additional-urls='[{"title":"Privacy Policy","url":"https://kubesail.com/privacy"},{"title":"Terms of Service","url":"https://kubesail.com/terms"}]' \
     com.docker.extension.changelog="<ul><li>Added metadata to provide more information about the extension.</li></ul>"
 
-COPY hello.sh .
 COPY metadata.json .
 COPY icon.svg .
 COPY --from=client-builder /app/client/dist ui
